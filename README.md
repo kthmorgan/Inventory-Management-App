@@ -207,5 +207,4 @@ inventory-dist/
 ```
 
 ## License
-
-MIT — use it, modify it, share it.
+ GPL-3.0 license 
