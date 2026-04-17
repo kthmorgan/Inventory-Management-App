@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <h1>📦 Inventory</h1>
+        <div class="header-stats">
+            <span id="total-items">{{ total_items }} items</span>
+            <span id="total-value">${{ "{:,.2f}".format(total_value) }}</span>
+        </div>
+    </header>
+
+    <nav class="toolbar">
+        <form class="search-bar" method="get" action="/" id="filter-form">
+            <input type="text" name="search" placeholder="Search items..." value="{{ search }}" id="search-input">
+            <button type="submit">🔍</button>
+        </form>
+
+        <div class="filters">
+            <select name="category" id="cat-select" onchange="submitFilter('category')">
+                <option value="">All Categories</option>
+                {% for cat in categories %}
+                <option value="{{ cat }}" {% if category == cat %}selected{% endif %}>{{ cat }}</option>
+                {% endfor %}
+            </select>
+            <select name="location" id="loc-select" onchange="submitFilter('location')">
+                <option value="">All Locations</option>
+                {% for loc in locations %}
+                <option value="{{ loc }}" {% if location == loc %}selected{% endif %}>{{ loc }}</option>
+                {% endfor %}
+            </select>
+            <select name="sort" id="sort-select" onchange="submitFilter('sort')">
+                <option value="name" {% if sort == 'name' %}selected{% endif %}>Name</option>
+                <option value="created_at" {% if sort == 'created_at' %}selected{% endif %}>Date Added</option>
+                <option value="purchase_value" {% if sort == 'purchase_value' %}selected{% endif %}>Value</option>
+                <option value="quantity" {% if sort == 'quantity' %}selected{% endif %}>Quantity</option>
+                <option value="location" {% if sort == 'location' %}selected{% endif %}>Location</option>
+            </select>
+        </div>
+
+        <a href="/add" class="btn btn-primary" id="add-btn">+ Add Item</a>
+    </nav>
+
+    <script>
+    function submitFilter(changed) {
+        const params = new URLSearchParams();
+        const cat = document.getElementById('cat-select').value;
+        const loc = document.getElementById('loc-select').value;
+        const sort = document.getElementById('sort-select').value;
+        // When a dropdown changes, clear search text and submit just the filters
+        if (cat) params.set('category', cat);
+        if (loc) params.set('location', loc);
+        params.set('sort', sort);
+        window.location.search = params.toString();
+    }
+    </script>
+
+    <main>
+        {% if not items %}
+        <div class="empty-state">
+            <p>No items found.</p>
+            {% if not search and not category and not location %}
+            <a href="/add" class="btn btn-primary">Add your first item</a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="items-grid">
+            {% for item in items %}
+            <div class="item-card" onclick="location.href='/item/{{ item.id }}'">
+                {% if item.photos %}
+                <div class="card-photo">
+                    <img src="/static/photos/{{ item.photos[0].filename }}" alt="{{ item.name }}" loading="lazy">
+                </div>
+                {% else %}
+                <div class="card-photo card-photo-placeholder">📦</div>
+                {% endif %}
+                <div class="card-body">
+                    <h3>{{ item.name }}</h3>
+                    {% if item.category %}<span class="badge">{{ item.category }}</span>{% endif %}
+                    {% if item.location %}<span class="badge badge-secondary">{{ item.location }}</span>{% endif %}
+                    <div class="card-meta">
+                        <span>×{{ item.quantity }}</span>
+                        {% if item.purchase_value %}<span>${{ "{:.2f}".format(item.purchase_value) }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

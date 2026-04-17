@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ item.name }} — Inventory</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-link">← Back</a>
+        <h1>{{ item.name }}</h1>
+    </header>
+
+    <main class="detail-view">
+        <div class="detail-grid">
+            <div class="detail-photos">
+                {% if item.photos %}
+                <div class="photo-gallery">
+                    {% for photo in item.photos %}
+                    <div class="photo-thumb">
+                        <img src="/static/photos/{{ photo.filename }}" alt="{{ item.name }}" loading="lazy">
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="photo-placeholder-large">📦</div>
+                {% endif %}
+            </div>
+
+            <div class="detail-info">
+                <table class="detail-table">
+                    <tr><th>Name</th><td>{{ item.name }}</td></tr>
+                    {% if item.description %}<tr><th>Description</th><td>{{ item.description }}</td></tr>{% endif %}
+                    {% if item.notes %}<tr><th>Notes</th><td>{{ item.notes }}</td></tr>{% endif %}
+                    <tr><th>Quantity</th><td>{{ item.quantity }}</td></tr>
+                    {% if item.category %}<tr><th>Category</th><td>{{ item.category }}</td></tr>{% endif %}
+                    {% if item.location %}<tr><th>Location</th><td>{{ item.location }}</td></tr>{% endif %}
+                    {% if item.serial_number %}<tr><th>Serial Number</th><td class="mono">{{ item.serial_number }}</td></tr>{% endif %}
+                    {% if item.purchase_date %}<tr><th>Purchase Date</th><td>{{ item.purchase_date }}</td></tr>{% endif %}
+                    {% if item.purchase_value %}<tr><th>Purchase Value</th><td>${{ "{:.2f}".format(item.purchase_value) }}</td></tr>{% endif %}
+                    <tr><th>Added</th><td>{{ item.created_at }}</td></tr>
+                    <tr><th>Updated</th><td>{{ item.updated_at }}</td></tr>
+                </table>
+
+                <div class="detail-actions">
+                    <a href="/edit/{{ item.id }}" class="btn btn-primary">Edit</a>
+                    <form action="/delete/{{ item.id }}" method="post" onsubmit="return confirm('Delete {{ item.name }}? This cannot be undone.')">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

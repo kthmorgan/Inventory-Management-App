@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% if item %}Edit{% else %}Add{% endif %} Item — Inventory</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-link">← Back</a>
+        <h1>{% if item %}Edit: {{ item.name }}{% else %}Add New Item{% endif %}</h1>
+    </header>
+
+    <main>
+        <form class="item-form" method="post" enctype="multipart/form-data" action="{% if item %}/edit/{{ item.id }}{% else %}/add{% endif %}">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="name">Name *</label>
+                    <input type="text" id="name" name="name" required value="{{ item.name if item else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <input type="text" id="category" name="category" value="{{ item.category if item else '' }}" list="categories" placeholder="e.g., Networking, Tools, Storage">
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" id="quantity" name="quantity" min="0" value="{{ item.quantity if item else 1 }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location" value="{{ item.location if item else '' }}" list="locations" placeholder="e.g., Garage, Shop, Office">
+                </div>
+
+                <div class="form-group">
+                    <label for="serial_number">Serial Number</label>
+                    <input type="text" id="serial_number" name="serial_number" value="{{ item.serial_number if item else '' }}" class="mono">
+                </div>
+
+                <div class="form-group">
+                    <label for="purchase_date">Purchase Date</label>
+                    <input type="date" id="purchase_date" name="purchase_date" value="{{ item.purchase_date if item else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="purchase_value">Purchase Value ($)</label>
+                    <input type="number" id="purchase_value" name="purchase_value" step="0.01" min="0" value="{{ item.purchase_value if item else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="photos">Photos</label>
+                    <input type="file" id="photos" name="photos" multiple accept="image/*">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" rows="3">{{ item.description if item else '' }}</textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="3">{{ item.notes if item else '' }}</textarea>
+                </div>
+            </div>
+
+            {% if item and item.photos %}
+            <div class="current-photos">
+                <h3>Current Photos</h3>
+                <div class="photo-grid">
+                    {% for photo in item.photos %}
+                    <div class="photo-edit-item">
+                        <img src="/static/photos/{{ photo.filename }}" alt="Photo">
+                        <label><input type="checkbox" name="delete_photos" value="{{ photo.id }}"> Delete</label>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">{% if item %}Save Changes{% else %}Add Item{% endif %}</button>
+                <a href="{% if item %}/item/{{ item.id }}{% else %}/{% endif %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </main>
+</body>
+</html>

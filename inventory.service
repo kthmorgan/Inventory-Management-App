@@ -1,0 +1,14 @@
+[Unit]
+Description=Inventory Management App
+After=network.target
+
+[Service]
+Type=simple
+User=__USER__
+WorkingDirectory=__INSTALLDIR__
+ExecStart=/usr/bin/python3 __INSTALLDIR__/app.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
