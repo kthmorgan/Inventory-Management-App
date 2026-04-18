@@ -204,6 +204,73 @@ main { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
 
 .form-actions { display: flex; gap: .75rem; margin-top: 1.5rem; }
 
+/* Category management */
+.category-add-form {
+    display: flex;
+    gap: .75rem;
+    margin-bottom: 1.5rem;
+    max-width: 500px;
+}
+.category-add-form input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: .5rem .75rem;
+    border-radius: var(--radius);
+    font-size: .9rem;
+    outline: none;
+}
+.category-add-form input:focus { border-color: var(--primary); }
+
+.category-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+.category-table th {
+    text-align: left;
+    padding: .75rem 1rem;
+    background: var(--surface2);
+    color: var(--text2);
+    font-weight: 500;
+    font-size: .85rem;
+}
+.category-table td {
+    padding: .6rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+.category-table tr:last-child td { border-bottom: none; }
+.category-table .actions {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+}
+.inline-form {
+    display: inline-flex;
+    gap: .3rem;
+    align-items: center;
+}
+.inline-form input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: .3rem .5rem;
+    border-radius: 4px;
+    font-size: .85rem;
+    width: 140px;
+    outline: none;
+}
+.inline-form input:focus { border-color: var(--primary); }
+
+.btn-small {
+    padding: .3rem .6rem;
+    font-size: .8rem;
+    border-radius: 4px;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .detail-grid { grid-template-columns: 1fr; }
@@ -212,4 +279,6 @@ main { padding: 1.5rem; max-width: 1400px; margin: 0 auto; }
     .search-bar { max-width: none; }
     .filters { width: 100%; }
     .items-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+    .category-table .actions { flex-direction: column; align-items: flex-start; }
+    .inline-form input { width: 120px; }
 }

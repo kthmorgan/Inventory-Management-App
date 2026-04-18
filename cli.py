@@ -7,6 +7,7 @@ import sys
 import requests
 
 BASE_URL = "http://localhost:8480/api/items"
+CATEGORIES_URL = "http://localhost:8480/api/categories"
 
 
 def cmd_add(args):
@@ -99,7 +100,6 @@ def cmd_show(args):
 
 
 def cmd_update(args):
-    # First get current item
     resp = requests.get(f"{BASE_URL}/{args.id}")
     if resp.status_code == 404:
         print(f"✗ Item #{args.id} not found")
@@ -161,6 +161,68 @@ def cmd_search(args):
         print(f"#{item['id']}\t{item['name']}\t×{item['quantity']}\t{item['location']}\t{val}")
 
 
+# ── Category Commands ───────────────────────────────────────────
+
+def cmd_categories_list(args):
+    resp = requests.get(CATEGORIES_URL)
+    categories = resp.json()
+
+    if not categories:
+        print("No categories defined.")
+        return
+
+    if args.format == "json":
+        print(json.dumps(categories, indent=2))
+        return
+
+    print(f"{'ID':>4}  {'Category':<25} {'Items':>5}")
+    print("─" * 40)
+    for cat in categories:
+        print(f"#{cat['id']:<3} {cat['name'][:25]:<25} {cat['item_count']:>5}")
+
+
+def cmd_categories_add(args):
+    resp = requests.post(CATEGORIES_URL, json={"name": args.name})
+    if resp.status_code == 201:
+        cat = resp.json()
+        print(f"✓ Added category: {cat['name']}")
+    elif resp.status_code == 409:
+        print(f"✗ Category '{args.name}' already exists")
+        sys.exit(1)
+    else:
+        print(f"✗ Error: {resp.status_code} {resp.text}")
+        sys.exit(1)
+
+
+def cmd_categories_rename(args):
+    resp = requests.put(f"{CATEGORIES_URL}/{args.id}", json={"name": args.new_name})
+    if resp.ok:
+        data = resp.json()
+        print(f"✓ Renamed: {data['old_name']} → {data['name']}")
+    elif resp.status_code == 404:
+        print(f"✗ Category #{args.id} not found")
+        sys.exit(1)
+    elif resp.status_code == 409:
+        print(f"✗ Category '{args.new_name}' already exists")
+        sys.exit(1)
+    else:
+        print(f"✗ Error: {resp.status_code} {resp.text}")
+        sys.exit(1)
+
+
+def cmd_categories_remove(args):
+    resp = requests.delete(f"{CATEGORIES_URL}/{args.id}")
+    if resp.ok:
+        data = resp.json()
+        print(f"✓ Deleted category: {data['name']} (items cleared)")
+    elif resp.status_code == 404:
+        print(f"✗ Category #{args.id} not found")
+        sys.exit(1)
+    else:
+        print(f"✗ Error: {resp.status_code} {resp.text}")
+        sys.exit(1)
+
+
 def main():
     parser = argparse.ArgumentParser(description="Inventory Management CLI")
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
@@ -210,6 +272,23 @@ def main():
     p_search = subparsers.add_parser("search", help="Search items")
     p_search.add_argument("query", nargs="+", help="Search terms")
 
+    # categories
+    p_cats = subparsers.add_parser("categories", help="Manage categories")
+    cat_sub = p_cats.add_subparsers(dest="cat_command", help="Category commands")
+
+    p_cat_list = cat_sub.add_parser("list", help="List categories")
+    p_cat_list.add_argument("--format", choices=["table", "json"], default="table", help="Output format")
+
+    p_cat_add = cat_sub.add_parser("add", help="Add a category")
+    p_cat_add.add_argument("--name", required=True, help="Category name")
+
+    p_cat_rename = cat_sub.add_parser("rename", help="Rename a category")
+    p_cat_rename.add_argument("id", type=int, help="Category ID")
+    p_cat_rename.add_argument("--new-name", required=True, help="New name")
+
+    p_cat_remove = cat_sub.add_parser("remove", help="Remove a category")
+    p_cat_remove.add_argument("id", type=int, help="Category ID")
+
     args = parser.parse_args()
 
     if not args.command:
@@ -223,8 +302,22 @@ def main():
         "update": cmd_update,
         "remove": cmd_remove,
         "search": cmd_search,
+        "categories": None,  # handled separately
     }
-    commands[args.command](args)
+
+    if args.command == "categories":
+        if not args.cat_command:
+            p_cats.print_help()
+            sys.exit(1)
+        cat_commands = {
+            "list": cmd_categories_list,
+            "add": cmd_categories_add,
+            "rename": cmd_categories_rename,
+            "remove": cmd_categories_remove,
+        }
+        cat_commands[args.cat_command](args)
+    else:
+        commands[args.command](args)
 
 
 if __name__ == '__main__':

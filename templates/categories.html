@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categories — Inventory</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <header>
+        <a href="/" class="back-link">← Back to Inventory</a>
+        <h1>🏷️ Categories</h1>
+    </header>
+
+    <main>
+        <form class="category-add-form" method="post" action="/categories/add">
+            <input type="text" name="name" placeholder="New category name..." required maxlength="100">
+            <button type="submit" class="btn btn-primary">Add Category</button>
+        </form>
+
+        {% if categories %}
+        <table class="category-table">
+            <thead>
+                <tr>
+                    <th>Category</th>
+                    <th>Items</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cat in categories %}
+                <tr>
+                    <td>
+                        <span class="badge">{{ cat.name }}</span>
+                    </td>
+                    <td>{{ cat.item_count }}</td>
+                    <td class="actions">
+                        <form method="post" action="/categories/rename/{{ cat.id }}" class="inline-form">
+                            <input type="text" name="name" value="{{ cat.name }}" required maxlength="100">
+                            <button type="submit" class="btn btn-small">Rename</button>
+                        </form>
+                        {% if cat.item_count == 0 %}
+                        <form method="post" action="/categories/delete/{{ cat.id }}" class="inline-form"
+                              onsubmit="return confirm('Delete category \'{{ cat.name }}\'? Items using it will have their category cleared.')">
+                            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                        </form>
+                        {% else %}
+                        <form method="post" action="/categories/delete/{{ cat.id }}" class="inline-form"
+                              onsubmit="return confirm('Delete category \'{{ cat.name }}\'? {{ cat.item_count }} item(s) will have their category cleared.')">
+                            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                        </form>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <p>No categories yet. Add one above.</p>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>
