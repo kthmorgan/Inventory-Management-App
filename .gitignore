@@ -1,0 +1,21 @@
+# Database
+*.db
+*.db-journal
+*.db-wal
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Uploaded photos
+static/photos/*
+!static/photos/.gitkeep
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
