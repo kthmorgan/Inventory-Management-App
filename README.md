@@ -11,8 +11,9 @@ A lightweight, self-hosted inventory tracking system with a web UI and CLI. Buil
 ## Quick Start
 
 ```bash
-# Clone or copy the inventory-dist directory
-cd inventory-dist
+# Clone the repo
+git clone https://github.com/kthmorgan/Inventory-Management-App.git
+cd Inventory-Management-App
 
 # Run the installer
 ./install.sh
@@ -38,7 +39,7 @@ The install script will offer to install Python and pip if they're missing (Debi
 ### Option 1: Manual
 
 ```bash
-cd inventory-dist
+cd Inventory-Management-App
 pip3 install flask requests
 python3 -c "from app import init_db; init_db()"
 python3 app.py
@@ -47,7 +48,7 @@ python3 app.py
 ### Option 2: Install Script
 
 ```bash
-cd inventory-dist
+cd Inventory-Management-App
 ./install.sh
 ```
 
@@ -190,7 +191,7 @@ Photos are in `static/photos/` and can be backed up alongside the database.
 ## File Structure
 
 ```
-inventory-dist/
+Inventory-Management-App/
 ├── app.py              # Web application + REST API
 ├── cli.py              # Command-line interface
 ├── schema.sql          # Database schema
